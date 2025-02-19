@@ -47,6 +47,7 @@ class RayMarching(moderngl_window.WindowConfig):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.wnd.mouse_exclusivity = True  # Захватываем ввод мыши
         # Загрузка шейдеров
         with open(self.resource_dir + '/shaders/vertex.glsl', 'r', encoding='utf-8') as f:
             vertex_shader_source = f.read()
@@ -76,6 +77,29 @@ class RayMarching(moderngl_window.WindowConfig):
         self.camera_velocity = np.zeros(3, dtype='f4')
         self.spring_stiffness = 10.0
         self.spring_damping = 2.0
+
+        # Initialize rotation velocities and friction
+        self.yaw_velocity = 0.0
+        self.pitch_velocity = 0.0
+        self.rotation_friction = 5.0
+
+        # Initialize camera shake parameters
+        self.shake_trauma = 0.0
+        self.shake_decay = 1.0
+        self.shake_offset = np.zeros(3, dtype='f4')
+
+        # Initialize FOV parameters
+        self.current_fov = 60.0
+        self.target_fov = 60.0
+        self.fov_smooth_speed = 5.0
+
+        # Initialize orbit distance constraints
+        self.orbit_distance = self.distance
+        self.min_orbit_distance = 2.0
+        self.max_orbit_distance = 10.0
+
+        self.orbit_yaw = 0.0
+        self.orbit_pitch = 0.0
 
     def smooth_position(self, current, target, smoothing, dt):
         """Apply exponential smoothing to position"""
@@ -145,6 +169,9 @@ class RayMarching(moderngl_window.WindowConfig):
         width, height = self.wnd.size
         self.program["u_resolution"].value = (width, height)
 
+        # Update camera rotation
+        self.update_camera_rotation(frame_time)
+
         # Симуляция движения цели (например, по синусоиде)
         sim_target = np.array([np.sin(elapsed), 0.0, np.cos(elapsed)], dtype='f4')
         self.camera_target = sim_target
@@ -154,9 +181,9 @@ class RayMarching(moderngl_window.WindowConfig):
         # Вычисляем желаемое положение камеры для орбитальной модели
         # offset вычисляется на основе текущих углов (yaw, pitch)
         offset = np.array([
-            np.cos(self.pitch) * np.sin(self.yaw),
-            np.sin(self.pitch),
-            np.cos(self.pitch) * np.cos(self.yaw)
+            np.cos(self.orbit_pitch) * np.sin(self.orbit_yaw),
+            np.sin(self.orbit_pitch),
+            np.cos(self.orbit_pitch) * np.cos(self.orbit_yaw)
         ], dtype='f4')
         desired_pos = filtered_target - self.distance * offset
 
@@ -196,20 +223,22 @@ class RayMarching(moderngl_window.WindowConfig):
 
     def mouse_drag_event(self, x, y, dx, dy, buttons):
         sensitivity = 0.005  # настройте чувствительность по необходимости
-        self.yaw   += dx * sensitivity
-        self.pitch += dy * sensitivity
+        self.yaw_velocity = dx * sensitivity
+        self.pitch_velocity = dy * sensitivity
+        self.orbit_yaw += self.yaw_velocity
+        self.orbit_pitch += self.pitch_velocity
         # Ограничиваем pitch, чтобы камера не перевернулась
         max_pitch = np.radians(89.0)
-        self.pitch = np.clip(self.pitch, -max_pitch, max_pitch)
+        self.orbit_pitch = np.clip(self.orbit_pitch, -max_pitch, max_pitch)
 
     def mouse_scroll_event(self, x_offset: float, y_offset: float):
         """Handle mouse scroll for camera zoom"""
         zoom_speed = 0.5
-        self.orbit_distance -= y_offset * zoom_speed
+        self.distance -= y_offset * zoom_speed
         # Clamp the distance between min and max values
-        self.orbit_distance = np.clip(self.orbit_distance, 
-                                    self.min_orbit_distance, 
-                                    self.max_orbit_distance)
+        self.distance = np.clip(self.distance, 
+                                self.min_orbit_distance, 
+                                self.max_orbit_distance)
 
 if __name__ == '__main__':
     moderngl_window.run_window_config(RayMarching)
