@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV '/home/ivan/Рабочий стол/final-html/venv'
+set -gx VIRTUAL_ENV '/home/ivan/Рабочий стол/python_render/python_reymarching_render/venv'
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH

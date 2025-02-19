@@ -9,6 +9,7 @@ uniform sampler2D u_texture;
 // Новые uniform-переменные для управления камерой
 uniform vec3 u_camPos;
 uniform mat3 u_camRot;
+uniform float u_fov;
 
 #define MAX_STEPS 500
 #define MAX_DIST 1000.0

@@ -219,6 +219,8 @@ deactivate -nondestructive
 # that there is an activated venv.
 $env:VIRTUAL_ENV = $VenvDir
 
+set -gx VIRTUAL_ENV '/home/ivan/Рабочий стол/python_render/python_reymarching_render/venv'
+
 if (-not $Env:VIRTUAL_ENV_DISABLE_PROMPT) {
 
     Write-Verbose "Setting prompt to '$Prompt'"
