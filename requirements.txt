@@ -1,0 +1,4 @@
+numpy
+pyglet<2.0  # Use older Pyglet version for compatibility with moderngl_window
+moderngl
+moderngl_window

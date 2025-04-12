@@ -163,7 +163,8 @@ class RayMarching(moderngl_window.WindowConfig):
         ground_influence = 1.0 - min(1.0, (self.camera_pos[1] - min_height) / 2.0)
         self.camera_velocity *= (1.0 - ground_influence * 0.1)
 
-    def on_render(self, current_time: float, frame_time: float):
+    def render(self, current_time: float, frame_time: float):
+        # Method renamed from on_render to render
         elapsed = time.time() - self.start_time
         self.program["u_time"].value = elapsed
         width, height = self.wnd.size
@@ -216,12 +217,13 @@ class RayMarching(moderngl_window.WindowConfig):
         self.quad.render(self.program)
 
     def key_event(self, key, action, modifiers):
-        if action not in (self.wnd.keys.ACTION_PRESS, self.wnd.keys.ACTION_REPEAT):
+        # Update to use only ACTION_PRESS since ACTION_REPEAT doesn't exist
+        if action != self.wnd.keys.ACTION_PRESS:
             return
         if key == self.wnd.keys.ESCAPE:
             self.wnd.close()
 
-    def mouse_drag_event(self, x, y, dx, dy, buttons):
+    def mouse_drag_event(self, x, y, dx, dy, buttons=None):
         sensitivity = 0.005  # настройте чувствительность по необходимости
         self.yaw_velocity = dx * sensitivity
         self.pitch_velocity = dy * sensitivity

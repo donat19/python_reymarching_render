@@ -1,6 +1,4 @@
-#!/bin/sh
-'''exec' "/home/ivan/Рабочий стол/final-html/venv/bin/python3" "$0" "$@"
-' '''
+#!/home/ivan/Documents/GitHub/python_reymarching_render/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

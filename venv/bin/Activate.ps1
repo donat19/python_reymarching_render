@@ -219,7 +219,7 @@ deactivate -nondestructive
 # that there is an activated venv.
 $env:VIRTUAL_ENV = $VenvDir
 
-set -gx VIRTUAL_ENV '/home/ivan/Рабочий стол/python_render/python_reymarching_render/venv'
+$env:VIRTUAL_ENV_PROMPT = $Prompt
 
 if (-not $Env:VIRTUAL_ENV_DISABLE_PROMPT) {
 
@@ -235,7 +235,6 @@ if (-not $Env:VIRTUAL_ENV_DISABLE_PROMPT) {
         Write-Host -NoNewline -ForegroundColor Green "($_PYTHON_VENV_PROMPT_PREFIX) "
         _OLD_VIRTUAL_PROMPT
     }
-    $env:VIRTUAL_ENV_PROMPT = $Prompt
 }
 
 # Clear PYTHONHOME
